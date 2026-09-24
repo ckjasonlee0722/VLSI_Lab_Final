@@ -1,0 +1,1186 @@
+elaborate $DESIGN
+Loading db file '/usr/cad/synopsys/synthesis/2022.12/libraries/syn/gtech.db'
+  Loading link library 'slow'
+  Loading link library 'gtech'
+Running PRESTO HDLC
+Warning:  ../01_RTL/MATRIX_MULT.v:142: DEFAULT branch of CASE statement cannot be reached. (ELAB-311)
+
+Statistics for case statements in always block at line 79 in file
+        '../01_RTL/MATRIX_MULT.v'
+===============================================
+|           Line           |  full/ parallel  |
+===============================================
+|            88            |    auto/auto     |
+===============================================
+
+Inferred memory devices in process
+        in routine MATRIX_MULT line 79 in file
+                '../01_RTL/MATRIX_MULT.v'.
+===============================================================================
+|    Register Name    |   Type    | Width | Bus | MB | AR | AS | SR | SS | ST |
+===============================================================================
+|       D10_reg       | Flip-flop |  13   |  Y  | N  | N  | N  | N  | N  | N  |
+|      state_reg      | Flip-flop |   2   |  Y  | N  | Y  | N  | N  | N  | N  |
+|      in_oh_reg      | Flip-flop |   7   |  Y  | N  | Y  | N  | N  | N  | N  |
+|      in_oh_reg      | Flip-flop |   1   |  N  | N  | N  | Y  | N  | N  | N  |
+|     out_oh_reg      | Flip-flop |   3   |  Y  | N  | Y  | N  | N  | N  | N  |
+|     out_oh_reg      | Flip-flop |   1   |  N  | N  | N  | Y  | N  | N  | N  |
+|    out_valid_reg    | Flip-flop |   1   |  N  | N  | Y  | N  | N  | N  | N  |
+|    out_data_reg     | Flip-flop |  13   |  Y  | N  | Y  | N  | N  | N  | N  |
+|       D11_reg       | Flip-flop |  13   |  Y  | N  | N  | N  | N  | N  | N  |
+|       A0_reg        | Flip-flop |   4   |  Y  | N  | N  | N  | N  | N  | N  |
+|       A1_reg        | Flip-flop |   4   |  Y  | N  | N  | N  | N  | N  | N  |
+|       A2_reg        | Flip-flop |   4   |  Y  | N  | N  | N  | N  | N  | N  |
+|       A3_reg        | Flip-flop |   4   |  Y  | N  | N  | N  | N  | N  | N  |
+|       M00_reg       | Flip-flop |   9   |  Y  | N  | N  | N  | N  | N  | N  |
+|       M10_reg       | Flip-flop |   9   |  Y  | N  | N  | N  | N  | N  | N  |
+|       M01_reg       | Flip-flop |   9   |  Y  | N  | N  | N  | N  | N  | N  |
+|       M11_reg       | Flip-flop |   9   |  Y  | N  | N  | N  | N  | N  | N  |
+|       D01_reg       | Flip-flop |  13   |  Y  | N  | N  | N  | N  | N  | N  |
+===============================================================================
+Presto compilation completed successfully. (MATRIX_MULT)
+Elaborated 1 design.
+Current design is now 'MATRIX_MULT'.
+1
+# (B-2) read_sverilog
+#read_sverilog $DESIGN\.v
+# (B-3) set current design
+current_design $DESIGN
+Current design is 'MATRIX_MULT'.
+{MATRIX_MULT}
+link
+
+  Linking design 'MATRIX_MULT'
+  Using the following designs and libraries:
+  --------------------------------------------------------------------------
+  MATRIX_MULT                 /home/VLSI06/Lab_final/02_SYN/MATRIX_MULT.db
+  slow (library)              /EDA_LIB/LIB/CBDK_IC_Contest_v2.5/SynopsysDC/db/slow.db
+  dw_foundation.sldb (library) /usr/cad/synopsys/synthesis/2022.12/libraries/syn/dw_foundation.sldb
+
+1
+#======================================================
+#  (C) Global Setting
+#======================================================
+#set_wire_load_mode top
+#set_operating_conditions -max WCCOM -min BCCOM
+#set_wire_load_model -name umc18_wl10 -library slow
+#======================================================
+#  (D) Set Design Constraints
+#======================================================
+# (D-1) Setting Clock Constraints
+create_clock -name clk -period $CYCLE [get_ports clk]
+1
+set_dont_touch_network             [get_clocks clk]
+1
+set_fix_hold                       [get_clocks clk]
+1
+set_clock_uncertainty       0.1    [get_clocks clk]
+1
+# set_clock_latency   -source 0      [get_clocks clk]
+# set_clock_latency           1      [get_clocks clk]
+set_input_transition        0.5    [all_inputs]
+1
+set_clock_transition        0.1    [all_clocks]
+1
+# (D-2) Setting in/out Constraints
+set_input_delay   -max  $INPUT_DLY  -clock clk   [all_inputs] ;  # set_up time check
+1
+set_input_delay   -min  0           -clock clk   [all_inputs] ;  # hold   time check
+1
+set_output_delay  -max  $OUTPUT_DLY -clock clk   [all_outputs] ; # set_up time check
+1
+set_output_delay  -min  0           -clock clk   [all_outputs] ; # hold   time check
+1
+set_input_delay 0 -clock clk clk
+1
+set_input_delay 0 -clock clk rst_n
+1
+#set_max_delay $CYCLE -from [all_inputs] -to [all_outputs]
+# (D-3) Setting Design Environment
+# set_driving_cell -library umc18io3v5v_slow -lib_cell P2C    -pin {Y}  [get_ports clk]
+# set_driving_cell -library umc18io3v5v_slow -lib_cell P2C    -pin {Y}  [remove_from_collection [all_inputs] [get_ports clk]]
+# set_load  [load_of "umc18io3v5v_slow/P8C/A"]       [all_outputs] ; # ~= 0.038
+set_load 0.05 [all_outputs]
+1
+# (D-4) Setting DRC Constraint
+#set_max_delay           0     ; # Optimize delay max effort
+#set_max_area            0      ; # Optimize area max effort
+set_max_transition      3       [all_inputs]   ; # U18 LUT Max Transition Value
+1
+set_max_capacitance     0.15    [all_inputs]   ; # U18 LUT Max Capacitance Value
+1
+set_max_fanout          10      [all_inputs]
+1
+# set_dont_use slow/JKFF*
+#set_dont_touch [get_cells core_reg_macro]
+#set hdlin_ff_always_sync_set_reset true
+# (D-5) Report Clock skew
+report_clock -skew clk
+Information: Checking out the license 'DesignWare'. (SEC-104)
+Information: Updating design information... (UID-85)
+
+****************************************
+Report : clock_skew
+Design : MATRIX_MULT
+Version: U-2022.12
+Date   : Wed Jun 10 11:12:43 2026
+****************************************
+
+                 Rise      Fall  Min Rise  Min fall        Uncertainty
+Object          Delay     Delay     Delay     Delay     Plus      Minus
+--------------------------------------------------------------------------------
+clk                 -         -         -         -      0.10      0.10
+
+                 Max Transition      Min Transition
+Object           Rise      Fall      Rise      Fall
+-------------------------------------------------------
+clk              0.10      0.10      0.10      0.10
+1
+check_timing
+
+Information: Checking generated_clocks...
+
+Information: Checking loops...
+
+Information: Checking no_input_delay...
+
+Information: Checking unconstrained_endpoints...
+
+Information: Checking pulse_clock_cell_type...
+
+Information: Checking no_driving_cell...
+
+Information: Checking partial_input_delay...
+1
+#======================================================
+#  (E) Optimization
+#======================================================
+check_design > Report/$DESIGN\.check
+set_fix_multiple_port_nets -all -buffer_constants [get_designs *]
+1
+set_fix_hold [all_clocks]
+1
+compile_ultra
+Information: Performing power optimization. (PWR-850)
+Alib files are up-to-date.
+Information: Running optimization using a maximum of 4 cores. (OPT-1500)
+Information: Evaluating DesignWare library utilization. (UISN-27)
+
+============================================================================
+| DesignWare Building Block Library  |         Version         | Available |
+============================================================================
+| Basic DW Building Blocks           | U-2022.12-DWBB_202212.0 |     *     |
+| Licensed DW Building Blocks        | U-2022.12-DWBB_202212.0 |     *     |
+============================================================================
+
+====================================================================================================
+| Flow Information                                                                                 |
+----------------------------------------------------------------------------------------------------
+| Flow         | Design Compiler NXT WLM                                                           |
+| Comand Line  | compile_ultra                                                                     |
+====================================================================================================
+| Design Information                                      | Value                                  |
+====================================================================================================
+| Number of Scenarios                                     | 0                                      |
+| Leaf Cell Count                                         | 252                                    |
+| Number of User Hierarchies                              | 0                                      |
+| Sequential Cell Count                                   | 119                                    |
+| Macro Count                                             | 0                                      |
+| Number of Power Domains                                 | 0                                      |
+| Number of Path Groups                                   | 2                                      |
+| Number of VT Class                                      | 0                                      |
+| Number of Clocks                                        | 1                                      |
+| Number of Dont Touch Cells                              | 21                                     |
+| Number of Dont Touch Nets                               | 1                                      |
+| Number of Size Only Cells                               | 0                                      |
+| Design with UPF Data                                    | false                                  |
+----------------------------------------------------------------------------------------------------
+| Variables                                               | Value                                  |
+----------------------------------------------------------------------------------------------------
+| set_fix_multiple_port_nets                              | -all -buffer_constants                 |
+====================================================================================================
+Information: Sequential output inversion is enabled.  SVF file must be used for formal verification. (OPT-1208)
+
+Information: There are 12 potential problems in your design. Please run 'check_design' for more information. (LINT-99)
+
+  Simplifying Design 'MATRIX_MULT'
+
+Loaded alib file './alib-52/slow.db.alib'
+  Building model 'DW01_NAND2'
+Information: Ungrouping 0 of 1 hierarchies before Pass 1 (OPT-775)
+Information: State dependent leakage is now switched from on to off.
+
+  Beginning Pass 1 Mapping
+  ------------------------
+  Processing 'MATRIX_MULT'
+ Implement Synthetic for 'MATRIX_MULT'.
+Information: Added key list 'DesignWare' to design 'MATRIX_MULT'. (DDB-72)
+
+  Updating timing information
+Information: Updating design information... (UID-85)
+Information: The library cell 'HOLDX1' in the library 'slow' is not characterized for internal power. (PWR-536)
+Information: The target library(s) contains cell(s), other than black boxes, that are not characterized for internal power. (PWR-24)
+
+  Beginning Mapping Optimizations  (Ultra High effort)
+  -------------------------------
+  Mapping Optimization (Phase 1)
+
+                                  TOTAL
+   ELAPSED            WORST NEG   SETUP    DESIGN                              LEAKAGE   MIN DELAY
+    TIME      AREA      SLACK     COST    RULE COST         ENDPOINT            POWER      COST
+  --------- --------- --------- --------- --------- ------------------------- --------- -----------
+    0:00:04   19769.6      0.00       0.0       0.0                           19309024.0000      0.00
+    0:00:04   19769.6      0.00       0.0       0.0                           19309024.0000      0.00
+
+  Beginning Constant Register Removal
+  -----------------------------------
+Information: The register 'D01_reg[12]' is a constant and will be removed. (OPT-1206)
+Information: The register 'D11_reg[12]' is a constant and will be removed. (OPT-1206)
+    0:00:04   19671.2      0.16       0.2       0.0                           19198468.0000      0.00
+    0:00:04   19671.2      0.16       0.2       0.0                           19198468.0000      0.00
+
+  Beginning Global Optimizations
+  ------------------------------
+  Numerical Synthesis (Phase 1)
+  Numerical Synthesis (Phase 2)
+  Global Optimization (Phase 1)
+  Global Optimization (Phase 2)
+  Global Optimization (Phase 3)
+  Global Optimization (Phase 4)
+  Global Optimization (Phase 5)
+  Global Optimization (Phase 6)
+  Global Optimization (Phase 7)
+  Global Optimization (Phase 8)
+  Global Optimization (Phase 9)
+  Global Optimization (Phase 10)
+  Global Optimization (Phase 11)
+  Global Optimization (Phase 12)
+  Global Optimization (Phase 13)
+  Global Optimization (Phase 14)
+  Global Optimization (Phase 15)
+  Global Optimization (Phase 16)
+  Global Optimization (Phase 17)
+  Global Optimization (Phase 18)
+  Global Optimization (Phase 19)
+  Global Optimization (Phase 20)
+  Global Optimization (Phase 21)
+  Global Optimization (Phase 22)
+  Global Optimization (Phase 23)
+  Global Optimization (Phase 24)
+  Global Optimization (Phase 25)
+  Global Optimization (Phase 26)
+  Global Optimization (Phase 27)
+  Global Optimization (Phase 28)
+  Global Optimization (Phase 29)
+  Global Optimization (Phase 30)
+  Global Optimization (Phase 31)
+  Mapping 'MATRIX_MULT_DW01_add_13'
+  Mapping 'MATRIX_MULT_DW01_add_14'
+
+  Beginning Isolate Ports
+  -----------------------
+
+  Beginning Delay Optimization
+  ----------------------------
+    0:00:05   11737.5      0.41       5.0      60.1                           9320899.0000      0.00
+    0:00:05   12216.2      0.00       0.0      55.7                           10047360.0000      0.00
+    0:00:05   12216.2      0.00       0.0      55.7                           10047360.0000      0.00
+    0:00:06   12216.2      0.00       0.0      55.7                           10047360.0000      0.00
+    0:00:06   12202.6      0.00       0.0      55.7                           10040742.0000      0.00
+    0:00:06   12202.6      0.00       0.0      55.7                           10040742.0000      0.00
+
+  Beginning WLM Backend Optimization
+  --------------------------------------
+    0:00:06   11866.5      0.00       0.0      33.1                           9748040.0000      0.00
+    0:00:06   11866.5      0.00       0.0      33.1                           9748040.0000      0.00
+    0:00:06   11866.5      0.00       0.0      33.1                           9748040.0000      0.00
+    0:00:06   11701.9      0.00       0.0      20.0                           9569753.0000      0.00
+    0:00:06   11701.9      0.00       0.0      20.0                           9569753.0000      0.00
+    0:00:06   11701.9      0.00       0.0      20.0                           9569753.0000      0.00
+    0:00:06   11701.9      0.00       0.0      20.0                           9569753.0000      0.00
+    0:00:06   11701.9      0.00       0.0      20.0                           9569753.0000      0.00
+    0:00:06   11701.9      0.00       0.0      20.0                           9569753.0000      0.00
+    0:00:06   11701.9      0.00       0.0      20.0                           9569753.0000      0.00
+    0:00:06   11701.9      0.00       0.0      20.0                           9569753.0000      0.00
+    0:00:06   11701.9      0.00       0.0      20.0                           9569753.0000      0.00
+    0:00:06   11701.9      0.00       0.0      20.0                           9569753.0000      0.00
+    0:00:06   11701.9      0.00       0.0      20.0                           9569753.0000      0.00
+    0:00:06   11701.9      0.00       0.0      20.0                           9569753.0000      0.00
+    0:00:06   11701.9      0.00       0.0      20.0                           9569753.0000      0.00
+    0:00:06   11701.9      0.00       0.0      20.0                           9569753.0000      0.00
+    0:00:06   11701.9      0.00       0.0      20.0                           9569753.0000      0.00
+    0:00:06   11701.9      0.00       0.0      20.0                           9569753.0000      0.00
+    0:00:06   11701.9      0.00       0.0      20.0                           9569753.0000      0.00
+    0:00:06   11701.9      0.00       0.0      20.0                           9569753.0000      0.00
+    0:00:06   11701.9      0.00       0.0      20.0                           9569753.0000      0.00
+
+
+  Beginning Design Rule Fixing  (max_transition)
+  ----------------------------
+
+                                  TOTAL
+   ELAPSED            WORST NEG   SETUP    DESIGN                              LEAKAGE   MIN DELAY
+    TIME      AREA      SLACK     COST    RULE COST         ENDPOINT            POWER      COST
+  --------- --------- --------- --------- --------- ------------------------- --------- -----------
+    0:00:06   11701.9      0.00       0.0      20.0                           9569753.0000      0.00
+  Global Optimization (Phase 32)
+  Global Optimization (Phase 33)
+  Global Optimization (Phase 34)
+    0:00:06   11465.9      0.00       0.0       0.0                           9374921.0000      0.00
+    0:00:06   11465.9      0.00       0.0       0.0                           9374921.0000      0.00
+
+
+  Beginning Leakage Power Optimization  (max_leakage_power 0)
+  ------------------------------------
+
+                                  TOTAL
+   ELAPSED            WORST NEG   SETUP    DESIGN                              LEAKAGE   MIN DELAY
+    TIME      AREA      SLACK     COST    RULE COST         ENDPOINT            POWER      COST
+  --------- --------- --------- --------- --------- ------------------------- --------- -----------
+    0:00:06   11465.9      0.00       0.0       0.0                           9374921.0000      0.00
+    0:00:06   11465.9      0.00       0.0       0.0                           9374921.0000      0.00
+    0:00:06   11465.9      0.00       0.0       0.0                           9374921.0000      0.00
+    0:00:06   11465.9      0.00       0.0       0.0                           9374921.0000      0.00
+    0:00:06   11389.6      0.00       0.0       0.0                           9241251.0000      0.00
+    0:00:06   11389.6      0.00       0.0       0.0                           9241251.0000      0.00
+    0:00:06   11389.6      0.00       0.0       0.0                           9241251.0000      0.00
+    0:00:06   11389.6      0.00       0.0       0.0                           9241251.0000      0.00
+    0:00:06   11389.6      0.00       0.0       0.0                           9241251.0000      0.00
+    0:00:06   11389.6      0.00       0.0       0.0                           9241251.0000      0.00
+    0:00:06   11389.6      0.00       0.0       0.0                           9241251.0000      0.00
+    0:00:06   11389.6      0.00       0.0       0.0                           9241251.0000      0.00
+    0:00:06   11389.6      0.00       0.0       0.0                           9241251.0000      0.00
+    0:00:06   11389.6      0.00       0.0       0.0                           9241251.0000      0.00
+    0:00:06   11389.6      0.00       0.0       0.0                           9241251.0000      0.00
+    0:00:06   11389.6      0.00       0.0       0.0                           9241251.0000      0.00
+    0:00:06   11389.6      0.00       0.0       0.0                           9241251.0000      0.00
+    0:00:06   11389.6      0.00       0.0       0.0                           9241251.0000      0.00
+    0:00:06   11389.6      0.00       0.0       0.0                           9241251.0000      0.00
+    0:00:06   11389.6      0.00       0.0       0.0                           9241251.0000      0.00
+    0:00:06   11389.6      0.00       0.0       0.0                           9241251.0000      0.00
+    0:00:06   11389.6      0.00       0.0       0.0                           9241251.0000      0.00
+    0:00:06   11389.6      0.00       0.0       0.0                           9241251.0000      0.00
+
+                                  TOTAL
+   ELAPSED            WORST NEG   SETUP    DESIGN                              LEAKAGE   MIN DELAY
+    TIME      AREA      SLACK     COST    RULE COST         ENDPOINT            POWER      COST
+  --------- --------- --------- --------- --------- ------------------------- --------- -----------
+    0:00:06   11389.6      0.00       0.0       0.0                           9241251.0000      0.00
+    0:00:07   10338.9      0.00       0.0       0.0                           7905295.0000      0.00
+    0:00:07   10338.9      0.00       0.0       0.0                           7905295.0000      0.00
+    0:00:07   10338.9      0.00       0.0       0.0                           7905295.0000      0.00
+    0:00:07   10338.9      0.00       0.0       0.0                           7905295.0000      0.00
+    0:00:07   10287.9      0.00       0.0       0.0                           7818700.5000      0.00
+    0:00:07   10287.9      0.00       0.0       0.0                           7818700.5000      0.00
+    0:00:07   10287.9      0.00       0.0       0.0                           7818700.5000      0.00
+    0:00:07   10287.9      0.00       0.0       0.0                           7818700.5000      0.00
+    0:00:07   10287.9      0.00       0.0       0.0                           7818700.5000      0.00
+    0:00:07   10287.9      0.00       0.0       0.0                           7818700.5000      0.00
+    0:00:07   10126.7      0.00       0.0       0.0                           7563174.5000      0.00
+Loading db file '/EDA_LIB/LIB/CBDK_IC_Contest_v2.5/SynopsysDC/db/slow.db'
+
+
+Note: Symbol # after min delay cost means estimated hold TNS across all active scenarios
+
+
+  Optimization Complete
+  ---------------------
+Information: State dependent leakage is now switched from off to on.
+Information: Propagating switching activity (low effort zero delay simulation). (PWR-6)
+1
+#uniquify
+#compile
+#======================================================
+#  (F) Output Reports
+#======================================================
+report_design  >  Report/$DESIGN\.design
+report_resource >  Report/$DESIGN\.resource
+report_timing -max_paths 3 >  Report/$DESIGN\.timing
+report_area >  Report/$DESIGN\.area
+report_power > Report/$DESIGN\.power
+report_clock > Report/$DESIGN\.clock
+report_port >  Report/$DESIGN\.port
+# report_power >  Report/$DESIGN\.power
+report_cell > Report/cells.list
+#report_reference > Report/$DESIGN\.reference
+#======================================================
+#  (G) Change Naming Rule
+#======================================================
+set bus_inference_style "%s\[%d\]"
+%s[%d]
+set bus_naming_style "%s\[%d\]"
+%s[%d]
+set hdlout_internal_busses true
+true
+change_names -hierarchy -rule verilog
+1
+define_name_rules name_rule -allowed "a-z A-Z 0-9 _" -max_length 255 -type cell
+1
+define_name_rules name_rule -allowed "a-z A-Z 0-9 _[]" -max_length 255 -type net
+1
+define_name_rules name_rule -map {{"\\*cell\\*" "cell"}}
+1
+define_name_rules name_rule -case_insensitive
+1
+change_names -hierarchy -rules name_rule
+1
+#======================================================
+#  (H) Output Results
+#======================================================
+set verilogout_higher_designs_first true
+true
+write -format verilog -output Netlist/$DESIGN\_SYN.v -hierarchy
+Writing verilog file '/home/VLSI06/Lab_final/02_SYN/Netlist/MATRIX_MULT_SYN.v'.
+1
+write -format ddc     -hierarchy -output $DESIGN\_SYN.ddc
+Writing ddc file 'MATRIX_MULT_SYN.ddc'.
+1
+write_sdf -version 3.0 -context verilog -load_delay cell Netlist/$DESIGN\_SYN.sdf -significant_digits 6
+Information: Writing timing information to file '/home/VLSI06/Lab_final/02_SYN/Netlist/MATRIX_MULT_SYN.sdf'. (WT-3)
+1
+write_sdc Netlist/$DESIGN\_SYN.sdc
+1
+#======================================================
+#  (I) Finish and Quit
+#======================================================
+report_power
+Information: Propagating switching activity (low effort zero delay simulation). (PWR-6)
+Warning: Design has unannotated primary inputs. (PWR-414)
+Warning: Design has unannotated sequential cell outputs. (PWR-415)
+
+****************************************
+Report : power
+        -analysis_effort low
+Design : MATRIX_MULT
+Version: U-2022.12
+Date   : Wed Jun 10 11:12:52 2026
+****************************************
+
+
+Library(s) Used:
+
+    slow (File: /EDA_LIB/LIB/CBDK_IC_Contest_v2.5/SynopsysDC/db/slow.db)
+
+
+Operating Conditions: slow   Library: slow
+Wire Load Model Mode: top
+
+
+Global Operating Voltage = 1.08
+Power-specific unit information :
+    Voltage Units = 1V
+    Capacitance Units = 1.000000pf
+    Time Units = 1ns
+    Dynamic Power Units = 1mW    (derived from V,C,T units)
+    Leakage Power Units = 1pW
+
+
+Attributes
+----------
+i - Including register clock pin internal power
+
+
+  Cell Internal Power  = 462.4348 uW   (94%)
+  Net Switching Power  =  31.1332 uW    (6%)
+                         ---------
+Total Dynamic Power    = 493.5680 uW  (100%)
+
+Cell Leakage Power     =   7.5632 uW
+
+
+                 Internal         Switching           Leakage            Total
+Power Group      Power            Power               Power              Power   (   %    )  Attrs
+--------------------------------------------------------------------------------------------------
+io_pad             0.0000            0.0000            0.0000            0.0000  (   0.00%)
+memory             0.0000            0.0000            0.0000            0.0000  (   0.00%)
+black_box          0.0000            0.0000            0.0000            0.0000  (   0.00%)
+clock_network      0.4154            0.0000            0.0000            0.4154  (  82.89%)  i
+register       8.5704e-03        4.8081e-03        2.5317e+06        1.5910e-02  (   3.17%)
+sequential         0.0000            0.0000            0.0000            0.0000  (   0.00%)
+combinational  3.8492e-02        2.6325e-02        5.0315e+06        6.9849e-02  (  13.94%)
+--------------------------------------------------------------------------------------------------
+Total              0.4624 mW     3.1133e-02 mW     7.5632e+06 pW         0.5011 mW
+1
+report_area
+
+****************************************
+Report : area
+Design : MATRIX_MULT
+Version: U-2022.12
+Date   : Wed Jun 10 11:12:52 2026
+****************************************
+
+Library(s) Used:
+
+    slow (File: /EDA_LIB/LIB/CBDK_IC_Contest_v2.5/SynopsysDC/db/slow.db)
+
+Number of ports:                           21
+Number of nets:                           929
+Number of cells:                          842
+Number of combinational cells:            725
+Number of sequential cells:               117
+Number of macros/black boxes:               0
+Number of buf/inv:                        164
+Number of references:                      65
+
+Combinational area:               6911.812836
+Buf/Inv area:                      602.576992
+Noncombinational area:            3214.875614
+Macro/Black Box area:                0.000000
+Net Interconnect area:      undefined  (No wire load specified)
+
+Total cell area:                 10126.688450
+Total area:                 undefined
+1
+report_timing
+
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : MATRIX_MULT
+Version: U-2022.12
+Date   : Wed Jun 10 11:12:52 2026
+****************************************
+
+Operating Conditions: slow   Library: slow
+Wire Load Model Mode: top
+
+  Startpoint: in_data[2] (input port clocked by clk)
+  Endpoint: M11_reg_8_ (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Point                                    Incr       Path
+  -----------------------------------------------------------
+  clock clk (rise edge)                    0.00       0.00
+  clock network delay (ideal)              0.00       0.00
+  input external delay                     2.50       2.50 r
+  in_data[2] (in)                          0.00       2.50 r
+  U395/Y (INVX8)                           0.11       2.61 f
+  U753/Y (NOR2X1)                          0.14       2.75 r
+  U762/S (ADDHX1)                          0.18       2.94 f
+  U677/Y (NOR2X1)                          0.09       3.03 r
+  U756/Y (INVX1)                           0.06       3.09 f
+  U779/Y (NAND2X1)                         0.08       3.18 r
+  U780/Y (XNOR2X2)                         0.16       3.33 f
+  U674/Y (OR2X2)                           0.21       3.54 f
+  U501/Y (AOI21X1)                         0.19       3.73 r
+  U570/Y (OAI21X2)                         0.10       3.83 f
+  U485/Y (AOI21X2)                         0.19       4.02 r
+  U801/Y (OAI21X4)                         0.10       4.12 f
+  U803/Y (AOI21X4)                         0.12       4.24 r
+  U472/Y (OAI21X1)                         0.08       4.32 f
+  U418/Y (XNOR2X1)                         0.16       4.48 f
+  U543/Y (OAI2BB2XL)                       0.18       4.66 f
+  M11_reg_8_/D (DFFQX1)                    0.00       4.66 f
+  data arrival time                                   4.66
+
+  clock clk (rise edge)                    5.00       5.00
+  clock network delay (ideal)              0.00       5.00
+  clock uncertainty                       -0.10       4.90
+  M11_reg_8_/CK (DFFQX1)                   0.00       4.90 r
+  library setup time                      -0.24       4.66
+  data required time                                  4.66
+  -----------------------------------------------------------
+  data required time                                  4.66
+  data arrival time                                  -4.66
+  -----------------------------------------------------------
+  slack (MET)                                         0.00
+
+
+1
+exit
+Memory usage for this session 226 Mbytes.
+Memory usage for this session including child processes 473 Mbytes.
+CPU usage for this session 14 seconds ( 0.00 hours ).
+Elapsed time for this session 16 seconds ( 0.00 hours ).
+
+Thank you...
+[VLSI06@localhost 02_SYN]$ ./08_check
+============================
+--> - No Soft IP detected.
+--> V Latch Checked!
+--> V Width Mismatch Checked!
+--> V No Error in syn.log!
+--> V Timing (MET) Checked!
+============================
+--> V 02_SYN Success !!
+============================
+Cycle: 5.00
+Area: 10126.688450
+Gate count: 1015
+Dynamic: Total Dynamic Power    = 486.5067 uW  (100%)
+Leakage: Cell Leakage Power     =   7.5632 uW
+Total power: 0.5011
+[VLSI06@localhost 02_SYN]$ cd ~/Lab_final/03_GATE
+[VLSI06@localhost 03_GATE]$ ./01_run_vcs_gate
+vcs -timescale=1ns/1fs -j4                -sverilog +v2k -full64 -Mupdate -R -debug_access+all -f "filelist.f"   -o "simv"               -l "vcs.log"              -v /EDA_LIB/LIB/CBDK_IC_Contest_v2.5/Verilog/tsmc13_neg.v +define+GATE +neg_tchk
+*** Using c compiler gcc instead of cc ...
+                         Chronologic VCS (TM)
+         Version T-2022.06_Full64 -- Wed Jun 10 11:13:01 2026
+
+                    Copyright (c) 1991 - 2022 Synopsys, Inc.
+   This software and the associated documentation are proprietary to Synopsys,
+ Inc. This software may only be used in accordance with the terms and conditions
+ of a written license agreement with Synopsys, Inc. All other use, reproduction,
+   or distribution of this software is strictly prohibited.  Licensed Products
+     communicate with Synopsys servers for the purpose of providing software
+    updates, detecting software piracy and verifying that customers are using
+    Licensed Products in conformity with the applicable License Key for such
+  Licensed Products. Synopsys will use information gathered in connection with
+    this process to deliver software updates and pursue software pirates and
+                                   infringers.
+
+ Inclusivity & Diversity - Visit SolvNetPlus to read the "Synopsys Statement on
+            Inclusivity and Diversity" (Refer to article 000036315 at
+                        https://solvnetplus.synopsys.com)
+
+Parsing design file 'TESTBED.v'
+Parsing included file 'PATTERN.v'.
+Back to file 'TESTBED.v'.
+Parsing included file 'MATRIX_MULT_SYN.v'.
+Back to file 'TESTBED.v'.
+Parsing library file '/EDA_LIB/LIB/CBDK_IC_Contest_v2.5/Verilog/tsmc13_neg.v'
+Top Level Modules:
+       TESTBED
+TimeScale is 1 ns / 1 ps
+
+Warning-[TFIPC] Too few instance port connections
+MATRIX_MULT_SYN.v, 126
+MATRIX_MULT, "DFFSX1 out_oh_reg_0_( .D (n310),  .CK (clk),  .SN (n849),  .Q (out_oh[0]));"
+  The above instance has fewer port connections than the module definition.
+  Please use '+lint=TFIPC-L' to print out detailed information of unconnected
+  ports.
+
+
+Warning-[TFIPC] Too few instance port connections
+MATRIX_MULT_SYN.v, 127
+MATRIX_MULT, "DFFSX1 in_oh_reg_0_( .D (n304),  .CK (clk),  .SN (n849),  .Q (in_oh[0]));"
+  The above instance has fewer port connections than the module definition.
+  Please use '+lint=TFIPC-L' to print out detailed information of unconnected
+  ports.
+
+
+Warning-[TFIPC] Too few instance port connections
+MATRIX_MULT_SYN.v, 128
+MATRIX_MULT, "DFFRX1 out_oh_reg_1_( .D (n309),  .CK (clk),  .RN (n849),  .Q (out_oh[1]));"
+  The above instance has fewer port connections than the module definition.
+  Please use '+lint=TFIPC-L' to print out detailed information of unconnected
+  ports.
+
+
+Warning-[TFIPC] Too few instance port connections
+MATRIX_MULT_SYN.v, 129
+MATRIX_MULT, "DFFRX1 out_oh_reg_2_( .D (n308),  .CK (clk),  .RN (n849),  .Q (out_oh[2]));"
+  The above instance has fewer port connections than the module definition.
+  Please use '+lint=TFIPC-L' to print out detailed information of unconnected
+  ports.
+
+
+Warning-[TFIPC] Too few instance port connections
+MATRIX_MULT_SYN.v, 130
+MATRIX_MULT, "DFFRX1 out_oh_reg_3_( .D (n307),  .CK (clk),  .RN (n849),  .Q (out_oh[3]));"
+  The above instance has fewer port connections than the module definition.
+  Please use '+lint=TFIPC-L' to print out detailed information of unconnected
+  ports.
+
+
+Warning-[TFIPC] Too few instance port connections
+MATRIX_MULT_SYN.v, 142
+MATRIX_MULT, "DFFRX1 in_oh_reg_4_( .D (n300),  .CK (clk),  .RN (n849),  .QN (n839));"
+  The above instance has fewer port connections than the module definition.
+  Please use '+lint=TFIPC-L' to print out detailed information of unconnected
+  ports.
+
+
+Warning-[TFIPC] Too few instance port connections
+MATRIX_MULT_SYN.v, 233
+MATRIX_MULT, "DFFRX1 out_valid_reg( .D (state[1]),  .CK (clk),  .RN (n849),  .Q (out_valid));"
+  The above instance has fewer port connections than the module definition.
+  Please use '+lint=TFIPC-L' to print out detailed information of unconnected
+  ports.
+
+
+Warning-[TFIPC] Too few instance port connections
+MATRIX_MULT_SYN.v, 234
+MATRIX_MULT, "DFFRX1 out_data_reg_10_( .D (n313),  .CK (clk),  .RN (n849),  .Q (out_data[10]));"
+  The above instance has fewer port connections than the module definition.
+  Please use '+lint=TFIPC-L' to print out detailed information of unconnected
+  ports.
+
+
+Warning-[TFIPC] Too few instance port connections
+MATRIX_MULT_SYN.v, 235
+MATRIX_MULT, "DFFRX1 out_data_reg_9_( .D (n314),  .CK (clk),  .RN (n849),  .Q (out_data[9]));"
+  The above instance has fewer port connections than the module definition.
+  Please use '+lint=TFIPC-L' to print out detailed information of unconnected
+  ports.
+
+
+Warning-[TFIPC] Too few instance port connections
+MATRIX_MULT_SYN.v, 236
+MATRIX_MULT, "DFFRX1 out_data_reg_8_( .D (n315),  .CK (clk),  .RN (n849),  .Q (out_data[8]));"
+  The above instance has fewer port connections than the module definition.
+  Please use '+lint=TFIPC-L' to print out detailed information of unconnected
+  ports.
+
+
+Warning-[TFIPC] Too few instance port connections
+MATRIX_MULT_SYN.v, 237
+MATRIX_MULT, "DFFRX1 out_data_reg_7_( .D (n316),  .CK (clk),  .RN (n849),  .Q (out_data[7]));"
+  The above instance has fewer port connections than the module definition.
+  Please use '+lint=TFIPC-L' to print out detailed information of unconnected
+  ports.
+
+
+Warning-[TFIPC] Too few instance port connections
+MATRIX_MULT_SYN.v, 238
+MATRIX_MULT, "DFFRX1 out_data_reg_6_( .D (n317),  .CK (clk),  .RN (n849),  .Q (out_data[6]));"
+  The above instance has fewer port connections than the module definition.
+  Please use '+lint=TFIPC-L' to print out detailed information of unconnected
+  ports.
+
+
+Warning-[TFIPC] Too few instance port connections
+MATRIX_MULT_SYN.v, 239
+MATRIX_MULT, "DFFRX1 out_data_reg_5_( .D (n318),  .CK (clk),  .RN (n849),  .Q (out_data[5]));"
+  The above instance has fewer port connections than the module definition.
+  Please use '+lint=TFIPC-L' to print out detailed information of unconnected
+  ports.
+
+
+Warning-[TFIPC] Too few instance port connections
+MATRIX_MULT_SYN.v, 240
+MATRIX_MULT, "DFFRX1 out_data_reg_4_( .D (n319),  .CK (clk),  .RN (n849),  .Q (out_data[4]));"
+  The above instance has fewer port connections than the module definition.
+  Please use '+lint=TFIPC-L' to print out detailed information of unconnected
+  ports.
+
+
+Warning-[TFIPC] Too few instance port connections
+MATRIX_MULT_SYN.v, 241
+MATRIX_MULT, "DFFRX1 out_data_reg_3_( .D (n320),  .CK (clk),  .RN (n849),  .Q (out_data[3]));"
+  The above instance has fewer port connections than the module definition.
+  Please use '+lint=TFIPC-L' to print out detailed information of unconnected
+  ports.
+
+
+Warning-[TFIPC] Too few instance port connections
+MATRIX_MULT_SYN.v, 242
+MATRIX_MULT, "DFFRX1 out_data_reg_2_( .D (n321),  .CK (clk),  .RN (n849),  .Q (out_data[2]));"
+  The above instance has fewer port connections than the module definition.
+  Please use '+lint=TFIPC-L' to print out detailed information of unconnected
+  ports.
+
+
+Warning-[TFIPC] Too few instance port connections
+MATRIX_MULT_SYN.v, 243
+MATRIX_MULT, "DFFRX1 out_data_reg_1_( .D (n322),  .CK (clk),  .RN (n849),  .Q (out_data[1]));"
+  The above instance has fewer port connections than the module definition.
+  Please use '+lint=TFIPC-L' to print out detailed information of unconnected
+  ports.
+
+
+Warning-[TFIPC] Too few instance port connections
+MATRIX_MULT_SYN.v, 244
+MATRIX_MULT, "DFFRX1 out_data_reg_0_( .D (n323),  .CK (clk),  .RN (n849),  .Q (out_data[0]));"
+  The above instance has fewer port connections than the module definition.
+  Please use '+lint=TFIPC-L' to print out detailed information of unconnected
+  ports.
+
+
+Warning-[TFIPC] Too few instance port connections
+MATRIX_MULT_SYN.v, 329
+MATRIX_MULT, "DFFRX2 out_data_reg_12_( .D (n841),  .CK (clk),  .RN (n849),  .Q (out_data[12]));"
+  The above instance has fewer port connections than the module definition.
+  Please use '+lint=TFIPC-L' to print out detailed information of unconnected
+  ports.
+
+
+Warning-[TFIPC] Too few instance port connections
+MATRIX_MULT_SYN.v, 330
+MATRIX_MULT, "DFFRX1 out_data_reg_11_( .D (n312),  .CK (clk),  .RN (n849),  .Q (out_data[11]));"
+  The above instance has fewer port connections than the module definition.
+  Please use '+lint=TFIPC-L' to print out detailed information of unconnected
+  ports.
+
+
+Warning-[CERO] Case equality with real operand
+PATTERN.v, 123
+PATTERN, "(out_data !== golden_ans)"
+  Use of case equality operator '!==' with real operand 'golden_ans'.
+
+
+
+   ***   $sdf_annotate() version 1.2R
+   ***    SDF file: "MATRIX_MULT_SYN.sdf"
+   ***    Annotation scope: TESTBED.u_MATRIX_MULT
+   ***    No MTM selection argument specified
+   ***    No SCALE FACTORS argument specified
+   ***    No SCALE TYPE argument specified
+   ***    MTM selection defaulted to "TOOL_CONTROL":
+               (+typdelays compiled, TYPICAL delays selected)
+   ***    SCALE FACTORS defaulted to "1.0:1.0:1.0":
+   ***    SCALE TYPE defaulted to: "FROM_MTM"
+   ***    Turnoff delay: "FROM_FILE"
+   ***    Approximation (mipd) policy: "MAXIMUM"
+
+   ***    SDF annotation begin: Wed Jun 10 11:13:02 2026
+
+
+SDF Info: +pulse_r/100, +pulse_e/100 in effect
+
+          Total errors: 0
+          Total warnings: 0
+   ***    SDF annotation completed: Wed Jun 10 11:13:02 2026
+
+
+Starting vcs inline pass...
+
+Note-[VCS_PARAL] Parallel code-gen enabled
+  VCS is running with parallel code generation(-j)...
+
+68 modules and 2 UDPs read.
+recompiling module AOI21X4
+recompiling module MATRIX_MULT
+recompiling module AO21X1
+recompiling module OAI21XL
+recompiling module OAI21X1
+recompiling module OAI21X2
+recompiling module OAI21X4
+recompiling module PATTERN
+recompiling module OAI2BB1XL
+recompiling module OAI2BB1X1
+recompiling module OA21XL
+recompiling module ADDFXL
+recompiling module AND3X1
+recompiling module NAND3XL
+recompiling module NOR3XL
+recompiling module ADDFX1
+recompiling module NOR2BX1
+recompiling module AND2X1
+recompiling module ADDFHX1
+recompiling module AND2X2
+recompiling module NAND2XL
+recompiling module ADDFHX2
+recompiling module NAND2X1
+recompiling module NOR2XL
+recompiling module NOR2X1
+recompiling module DFFRX1
+recompiling module NOR2X2
+recompiling module NOR2X4
+recompiling module OR2X1
+recompiling module OR2X2
+recompiling module DFFRX2
+recompiling module OR2X4
+recompiling module DFFSX1
+recompiling module AOI222XL
+recompiling module AOI222X1
+recompiling module OAI222XL
+recompiling module OAI222X1
+recompiling module ADDHX1
+recompiling module AOI32XL
+recompiling module DFFQX1
+recompiling module DFFQX2
+recompiling module DFFQX4
+recompiling module DFFHQX8
+recompiling module AOI22XL
+recompiling module AOI2BB2X1
+recompiling module AO22X1
+recompiling module AO22X4
+recompiling module OAI22XL
+recompiling module OAI2BB2XL
+recompiling module OA22X1
+recompiling module XOR2X1
+recompiling module XNOR2X1
+recompiling module XNOR2X2
+recompiling module AOI211XL
+recompiling module MXI2X1
+recompiling module OAI211XL
+recompiling module AOI21XL
+recompiling module AOI21X1
+recompiling module AOI21X2
+recompiling module INVXL
+recompiling module INVX1
+recompiling module INVX3
+recompiling module INVX8
+recompiling module INVX12
+recompiling module INVX16
+recompiling module CLKBUFX3
+recompiling module CLKINVX1
+        However, due to incremental compilation, only 67 modules need to be compiled.
+make[1]: Entering directory `/home/VLSI06/Lab_final/03_GATE/csrc'
+rm -f _cuarc*.so _csrc*.so pre_vcsobj_*.so share_vcsobj_*.so
+ld -shared  -Bsymbolic   -o .//../simv.daidir//_cuarc0.so objs/amcQw_d.o
+rm -f _cuarc0.so
+if [ -x ../simv ]; then chmod a-x ../simv; fi
+g++  -o ../simv      -rdynamic  -Wl,-rpath='$ORIGIN'/simv.daidir -Wl,-rpath=./simv.daidir -Wl,-rpath=/usr/cad/synopsys/vcs/2022.06/linux64/lib -L/usr/cad/synopsys/vcs/2022.06/linux64/lib  -Wl,-rpath-link=./  /usr/lib64/libnuma.so.1     _13107_archive_1.so _13128_archive_1.so _13129_archive_1.so _prev_archive_1.so _cuarc0.so objs/udps/U7Vwg.o objs/udps/exIG1.o  SIM_l.o      rmapats_mop.o rmapats.o rmar.o rmar_nd.o  rmar_llvm_0_1.o rmar_llvm_0_0.o           -lvirsim -lerrorinf -lsnpsmalloc -lvfs    -lvcsnew -lsimprofile -luclinative /usr/cad/synopsys/vcs/2022.06/linux64/lib/vcs_tls.o   -Wl,-whole-archive  -lvcsucli    -Wl,-no-whole-archive        _vcs_pli_stub_.o   /usr/cad/synopsys/vcs/2022.06/linux64/lib/vcs_save_restore_new.o /usr/cad/synopsys/verdi/2022.06//share/PLI/VCS/LINUX64/pli.a -ldl  -lc -lm -lpthread -ldl
+../simv up to date
+make[1]: Leaving directory `/home/VLSI06/Lab_final/03_GATE/csrc'
+Chronologic VCS simulator copyright 1991-2022
+Contains Synopsys proprietary information.
+Compiler version T-2022.06_Full64; Runtime version T-2022.06_Full64;  Jun 10 11:13 2026
+Doing SDF annotation ...... Done
+        PATTERN           1 Passed!
+        PATTERN           2 Passed!
+        PATTERN           3 Passed!
+        PATTERN           4 Passed!
+        PATTERN           5 Passed!
+        PATTERN           6 Passed!
+        PATTERN           7 Passed!
+        PATTERN           8 Passed!
+        PATTERN           9 Passed!
+        PATTERN          10 Passed!
+        PATTERN          11 Passed!
+        PATTERN          12 Passed!
+        PATTERN          13 Passed!
+        PATTERN          14 Passed!
+        PATTERN          15 Passed!
+        PATTERN          16 Passed!
+        PATTERN          17 Passed!
+        PATTERN          18 Passed!
+        PATTERN          19 Passed!
+        PATTERN          20 Passed!
+        PATTERN          21 Passed!
+        PATTERN          22 Passed!
+        PATTERN          23 Passed!
+        PATTERN          24 Passed!
+        PATTERN          25 Passed!
+        PATTERN          26 Passed!
+        PATTERN          27 Passed!
+        PATTERN          28 Passed!
+        PATTERN          29 Passed!
+        PATTERN          30 Passed!
+        PATTERN          31 Passed!
+        PATTERN          32 Passed!
+        PATTERN          33 Passed!
+        PATTERN          34 Passed!
+        PATTERN          35 Passed!
+        PATTERN          36 Passed!
+        PATTERN          37 Passed!
+        PATTERN          38 Passed!
+        PATTERN          39 Passed!
+        PATTERN          40 Passed!
+        PATTERN          41 Passed!
+        PATTERN          42 Passed!
+        PATTERN          43 Passed!
+        PATTERN          44 Passed!
+        PATTERN          45 Passed!
+        PATTERN          46 Passed!
+        PATTERN          47 Passed!
+        PATTERN          48 Passed!
+        PATTERN          49 Passed!
+        PATTERN          50 Passed!
+        PATTERN          51 Passed!
+        PATTERN          52 Passed!
+        PATTERN          53 Passed!
+        PATTERN          54 Passed!
+        PATTERN          55 Passed!
+        PATTERN          56 Passed!
+        PATTERN          57 Passed!
+        PATTERN          58 Passed!
+        PATTERN          59 Passed!
+        PATTERN          60 Passed!
+        PATTERN          61 Passed!
+        PATTERN          62 Passed!
+        PATTERN          63 Passed!
+        PATTERN          64 Passed!
+        PATTERN          65 Passed!
+        PATTERN          66 Passed!
+        PATTERN          67 Passed!
+        PATTERN          68 Passed!
+        PATTERN          69 Passed!
+        PATTERN          70 Passed!
+        PATTERN          71 Passed!
+        PATTERN          72 Passed!
+        PATTERN          73 Passed!
+        PATTERN          74 Passed!
+        PATTERN          75 Passed!
+        PATTERN          76 Passed!
+        PATTERN          77 Passed!
+        PATTERN          78 Passed!
+        PATTERN          79 Passed!
+        PATTERN          80 Passed!
+        PATTERN          81 Passed!
+        PATTERN          82 Passed!
+        PATTERN          83 Passed!
+        PATTERN          84 Passed!
+        PATTERN          85 Passed!
+        PATTERN          86 Passed!
+        PATTERN          87 Passed!
+        PATTERN          88 Passed!
+        PATTERN          89 Passed!
+        PATTERN          90 Passed!
+        PATTERN          91 Passed!
+        PATTERN          92 Passed!
+        PATTERN          93 Passed!
+        PATTERN          94 Passed!
+        PATTERN          95 Passed!
+        PATTERN          96 Passed!
+        PATTERN          97 Passed!
+        PATTERN          98 Passed!
+        PATTERN          99 Passed!
+        PATTERN         100 Passed!
+        PATTERN         101 Passed!
+        PATTERN         102 Passed!
+        PATTERN         103 Passed!
+        PATTERN         104 Passed!
+        PATTERN         105 Passed!
+        PATTERN         106 Passed!
+        PATTERN         107 Passed!
+        PATTERN         108 Passed!
+        PATTERN         109 Passed!
+        PATTERN         110 Passed!
+        PATTERN         111 Passed!
+        PATTERN         112 Passed!
+        PATTERN         113 Passed!
+        PATTERN         114 Passed!
+        PATTERN         115 Passed!
+        PATTERN         116 Passed!
+        PATTERN         117 Passed!
+        PATTERN         118 Passed!
+        PATTERN         119 Passed!
+        PATTERN         120 Passed!
+        PATTERN         121 Passed!
+        PATTERN         122 Passed!
+        PATTERN         123 Passed!
+        PATTERN         124 Passed!
+        PATTERN         125 Passed!
+        PATTERN         126 Passed!
+        PATTERN         127 Passed!
+        PATTERN         128 Passed!
+        PATTERN         129 Passed!
+        PATTERN         130 Passed!
+        PATTERN         131 Passed!
+        PATTERN         132 Passed!
+        PATTERN         133 Passed!
+        PATTERN         134 Passed!
+        PATTERN         135 Passed!
+        PATTERN         136 Passed!
+        PATTERN         137 Passed!
+        PATTERN         138 Passed!
+        PATTERN         139 Passed!
+        PATTERN         140 Passed!
+        PATTERN         141 Passed!
+        PATTERN         142 Passed!
+        PATTERN         143 Passed!
+        PATTERN         144 Passed!
+        PATTERN         145 Passed!
+        PATTERN         146 Passed!
+        PATTERN         147 Passed!
+        PATTERN         148 Passed!
+        PATTERN         149 Passed!
+        PATTERN         150 Passed!
+        PATTERN         151 Passed!
+        PATTERN         152 Passed!
+        PATTERN         153 Passed!
+        PATTERN         154 Passed!
+        PATTERN         155 Passed!
+        PATTERN         156 Passed!
+        PATTERN         157 Passed!
+        PATTERN         158 Passed!
+        PATTERN         159 Passed!
+        PATTERN         160 Passed!
+        PATTERN         161 Passed!
+        PATTERN         162 Passed!
+        PATTERN         163 Passed!
+        PATTERN         164 Passed!
+        PATTERN         165 Passed!
+        PATTERN         166 Passed!
+        PATTERN         167 Passed!
+        PATTERN         168 Passed!
+        PATTERN         169 Passed!
+        PATTERN         170 Passed!
+        PATTERN         171 Passed!
+        PATTERN         172 Passed!
+        PATTERN         173 Passed!
+        PATTERN         174 Passed!
+        PATTERN         175 Passed!
+        PATTERN         176 Passed!
+        PATTERN         177 Passed!
+        PATTERN         178 Passed!
+        PATTERN         179 Passed!
+        PATTERN         180 Passed!
+        PATTERN         181 Passed!
+        PATTERN         182 Passed!
+        PATTERN         183 Passed!
+        PATTERN         184 Passed!
+        PATTERN         185 Passed!
+        PATTERN         186 Passed!
+        PATTERN         187 Passed!
+        PATTERN         188 Passed!
+        PATTERN         189 Passed!
+        PATTERN         190 Passed!
+        PATTERN         191 Passed!
+        PATTERN         192 Passed!
+        PATTERN         193 Passed!
+        PATTERN         194 Passed!
+        PATTERN         195 Passed!
+        PATTERN         196 Passed!
+        PATTERN         197 Passed!
+        PATTERN         198 Passed!
+        PATTERN         199 Passed!
+        PATTERN         200 Passed!
+*************************************************************************
+*                Congratulations!                                       *
+*                Your execution cycles =   200 cycles                   *
+*                Your clock period = 5.0 ns                            *
+*************************************************************************
+==========================================================================================
+$finish called from file "PATTERN.v", line 141.
+$finish at simulation time             17630000
+           V C S   S i m u l a t i o n   R e p o r t
+Time: 17630000 ps
+CPU Time:      0.450 seconds;       Data structure size:   0.2Mb
+Wed Jun 10 11:13:05 2026
+CPU time: 1.460 seconds to compile + .389 seconds to elab + .675 seconds to link + .499 seconds in simulation
+[VLSI06@localhost 03_GATE]$ cd ~/Lab_final/04_PERF
+[VLSI06@localhost 04_PERF]$ ./01_check_perf
+[INFO] Starting verification process. Please wait...
+[INFO] Detected Cycle Time: 5.0
+[INFO] Running 01_RTL...
+[INFO] Running 02_SYN...
+[INFO] Running 03_GATE...
+
+------------------------------------------
+             Status Report
+------------------------------------------
+01_RTL  Status : Passed
+02_SYN  Status : Passed
+03_GATE Status : Passed
+------------------------------------------
+          Performance Metrics
+------------------------------------------
+Cycle Time     : 5.0
+Latency        : 200
+Area           : 10126.688450
+Total Power    : 0.5011
+IP Check       : PASS (IP-based arithmetic detected)
+------------------------------------------
+Final Score    : 25372417.91
+------------------------------------------
+[INFO] Check completed! The results have been saved to 04_PERF/result.log.
+[VLSI06@localhost 04_PERF]$ cat result.log
+==========================================
+       Student Performance Report
+==========================================
+
+------------------------------------------
+             Status Report
+------------------------------------------
+01_RTL  Status : Passed
+02_SYN  Status : Passed
+03_GATE Status : Passed
+------------------------------------------
+          Performance Metrics
+------------------------------------------
+Cycle Time     : 5.0
+Latency        : 200
+Area           : 10126.688450
+Total Power    : 0.5011
+IP Check       : PASS (IP-based arithmetic detected)
+------------------------------------------
+Final Score    : 25372417.91
+------------------------------------------
